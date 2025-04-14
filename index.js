@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 const PORT = process.env.PORT || 3000;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-const promptBase = \`
+const promptBase = `
 Eres Camila, asesora del Hotel Playazul en Coveñas. Atiendes por WhatsApp.
 Responde cálido, claro y con emojis. Cotiza usando esta lógica:
 
@@ -20,7 +20,7 @@ Responde cálido, claro y con emojis. Cotiza usando esta lógica:
 - Pasadía: $70.000 con almuerzo y zonas comunes
 
 Si el cliente dice fechas o edades, usa eso para responder. Si no sabes disponibilidad, dilo.
-\`;
+`;
 
 app.post('/webhook', async (req, res) => {
     const msg = req.body.messages?.[0];
@@ -47,7 +47,6 @@ app.post('/webhook', async (req, res) => {
 
     const reply = completion.data.choices[0].message.content;
 
-    // Simulación de envío (en producción usar 360dialog)
     console.log("Respuesta al cliente:", reply);
 
     res.sendStatus(200);

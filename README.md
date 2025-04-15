@@ -1,11 +1,17 @@
-# Bot de WhatsApp Inteligente – Hotel Playazul
+# Bot Playazul
 
-Este bot responde a mensajes como si fueras tú (Camila), usando ChatGPT.
+Este bot responde automáticamente a clientes que escriben al WhatsApp del Hotel Playazul usando OpenAI y la API de WhatsApp Business (Meta).
 
-## Cómo usarlo
-1. Sube este proyecto a Railway o GitHub
-2. Agrega tu API Key de OpenAI como variable (OPENAI_API_KEY)
-3. Usa la URL `/webhook` como Webhook en 360dialog
-4. ¡Listo para atender clientes!
+## ¿Qué hace?
 
-Autor: ChatGPT + Maria Camila 🏝️
+- Recibe mensajes por WhatsApp
+- Genera una respuesta usando GPT-3.5
+- Responde automáticamente por WhatsApp
+
+## Variables requeridas en Railway
+
+- `PORT=8080`
+- `VERIFY_TOKEN=playazul123`
+- `ACCESS_TOKEN=tu_token_de_meta`
+- `PHONE_NUMBER_ID=tu_id_numero`
+- `OPENAI_API_KEY=tu_api_key_openai`

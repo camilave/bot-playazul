@@ -7,12 +7,9 @@ const app = express();
 app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 3000;
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-// Webhook verification para Meta
 app.get('/webhook', (req, res) => {
-    const verify_token = 'playazul123';
-
+    const verify_token = process.env.VERIFY_TOKEN || 'playazul123';
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
@@ -43,29 +40,49 @@ app.post('/webhook', async (req, res) => {
     if (!msg || !msg.text || !msg.from) return res.sendStatus(200);
 
     const userMessage = msg.text.body;
+    const from = msg.from;
 
-    const completion = await axios.post(
-        'https://api.openai.com/v1/chat/completions',
-        {
-            model: 'gpt-3.5-turbo',
-            messages: [
-                { role: 'system', content: promptBase },
-                { role: 'user', content: userMessage }
-            ]
-        },
-        {
-            headers: {
-                'Authorization': `Bearer ${OPENAI_API_KEY}`,
-                'Content-Type': 'application/json'
+    try {
+        const completion = await axios.post(
+            'https://api.openai.com/v1/chat/completions',
+            {
+                model: 'gpt-3.5-turbo',
+                messages: [
+                    { role: 'system', content: promptBase },
+                    { role: 'user', content: userMessage }
+                ]
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+                    'Content-Type': 'application/json'
+                }
             }
-        }
-    );
+        );
 
-    const reply = completion.data.choices[0].message.content;
+        const reply = completion.data.choices[0].message.content;
 
-    console.log("Respuesta al cliente:", reply);
+        await axios.post(
+            `https://graph.facebook.com/v18.0/${process.env.PHONE_NUMBER_ID}/messages`,
+            {
+                messaging_product: "whatsapp",
+                to: from,
+                text: { body: reply }
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${process.env.ACCESS_TOKEN}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
 
-    res.sendStatus(200);
+        console.log("✅ Mensaje enviado al cliente:", reply);
+        res.sendStatus(200);
+    } catch (error) {
+        console.error("❌ Error al responder:", error.response?.data || error.message);
+        res.sendStatus(500);
+    }
 });
 
 app.get('/', (req, res) => res.send('Bot Playazul activo'));

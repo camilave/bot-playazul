@@ -9,6 +9,22 @@ app.use(bodyParser.json());
 const PORT = process.env.PORT || 3000;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
+// Webhook verification para Meta
+app.get('/webhook', (req, res) => {
+    const verify_token = 'playazul123';
+
+    const mode = req.query['hub.mode'];
+    const token = req.query['hub.verify_token'];
+    const challenge = req.query['hub.challenge'];
+
+    if (mode && token && mode === 'subscribe' && token === verify_token) {
+        console.log('✅ Webhook verificado correctamente.');
+        res.status(200).send(challenge);
+    } else {
+        res.sendStatus(403);
+    }
+});
+
 const promptBase = `
 Eres Camila, asesora del Hotel Playazul en Coveñas. Atiendes por WhatsApp.
 Responde cálido, claro y con emojis. Cotiza usando esta lógica:
